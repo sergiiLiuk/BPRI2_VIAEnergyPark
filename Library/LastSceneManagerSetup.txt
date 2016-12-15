@@ -1,4 +1,5 @@
 sceneSetups:
-- path: Assets/Main Scene.unity
+- path: C:/Users/sergii/Desktop/Project Version/Appendices/Appendices/Android Application
+    Source Code/BPRI2VIAEnergyPark/Assets/Main Scene.unity
   isLoaded: 1
   isActive: 1
