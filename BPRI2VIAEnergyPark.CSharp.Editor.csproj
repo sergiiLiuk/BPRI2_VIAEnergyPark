@@ -135,8 +135,7 @@
     <None Include="Assets\Resources\Shaders\Unlit_Lava_Distort.shader" />
     <None Include="Assets\Resources\Shaders\Unlit_Lava_Distort_Transparent.shader" />
     <None Include="Assets\Resources\Shaders\Unlit_Lava_Simple.shader" />
-    <None Include="Assets\StreamingAssets\QCAR\ARmarkerBPRI2.xml" />
-    <None Include="Assets\StreamingAssets\QCAR\BPR_I2_ImageTarget.xml" />
+    <None Include="Assets\StreamingAssets\QCAR\ARmarkerVIAEnergyStorage.xml" />
     <None Include="Assets\Vuforia\Editor\Scripts\Vuforia.UnityExtensions.Editor.XML" />
     <None Include="Assets\Vuforia\Editor\WebcamProfiles\profiles.xml" />
     <None Include="Assets\Vuforia\Scripts\Internal\Vuforia.UnityExtensions.XML" />

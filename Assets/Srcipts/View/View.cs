@@ -35,7 +35,7 @@ public class View : MonoBehaviour
     public GameObject labelInternetConnectionStatus;
     public GameObject labelServerConnectionStatus;
     public GameObject labelUsedStaticData;
-    public GameObject runtimeDataset_Scenario2; // available in SingleBoreholeMode mode.
+    public GameObject dataset_Scenario2; // available in SingleBoreholeMode mode.
     public GameObject targetGuide;
     public GameObject selectAppScenarioAnimation;
     public GameObject toggleBtns; // available only in EntireSystem mode;
@@ -44,7 +44,7 @@ public class View : MonoBehaviour
     public GameObject btnsScenario;
     public GameObject dataLoadScreen;
     public GameObject onStartAppAnimation;
-    public GameObject weaterSet;
+    public GameObject weatherSet;
 
     public Text txtCurrentLocation;
 
@@ -69,26 +69,22 @@ public class View : MonoBehaviour
     public Text infopage_tempBrineIn;
     public Text infopage_tempBrineOut;
     public Text infopage_waterFlowSpeedBrine;
+
     public Text infopage_tempVarmeIn;
     public Text infopage_tempVarmeOut;
     public Text infopage_waterFlowSpeedVarme;
+    public Text infopageCoPvalue;
 
     // Run time data elements
     public TextMesh tempInScenario1Brine;
     public TextMesh tempOutScenario1Brine;
     public TextMesh waterFlowSpeedScenario1Brine;
+    public TextMesh currentCoPvalueScenario1;
 
     public TextMesh tempInScenario1Varme;
     public TextMesh tempOutScenario1Varme;
     public TextMesh waterFlowSpeedScenario1Varme;
 
-    // Efficiency Bar;
-    public Transform efficiencyBarVIA14_Scenario1FillAmount;
-    public Transform efficiencyBarVIA14_Scenario1Value;
-    public Transform efficiencyBarVIA13_Scenario1FillAmount;
-    public Transform efficiencyBarVIA13_Scenario1Value;
-    public Transform efficiencyBarVIA14_Scenario2FillAmount;
-    public Transform efficiencyBarVIA14_Scenario2Value;
 
     void Start()
     {
@@ -100,40 +96,7 @@ public class View : MonoBehaviour
         btnScenario2.onClick.AddListener(delegate { controller.SelectScenario(2); });
         btnScenarioInfo.onClick.AddListener(delegate { controller.SelectScenario(3); });
     }
-    public void DisplayEfficiencyData_Scenario1(float efficiencyVIA13, float efficiencyVIA14)
-    {
-        if (efficiencyVIA14 != 0)
-        {
-            efficiencyBarVIA14_Scenario1Value.GetComponent<Text>().text = ((int)efficiencyVIA14).ToString() + "%";
-            efficiencyBarVIA14_Scenario1FillAmount.GetComponent<Image>().fillAmount = efficiencyVIA14 / 100;
-        }
-        else
-        {
-            efficiencyBarVIA14_Scenario1Value.GetComponent<Text>().text = "no data";
-        }
-        if (efficiencyVIA13 != 0)
-        {
-            efficiencyBarVIA13_Scenario1Value.GetComponent<Text>().text = ((int)efficiencyVIA13).ToString() + "%";
-            efficiencyBarVIA13_Scenario1FillAmount.GetComponent<Image>().fillAmount = efficiencyVIA13 / 100;
-        }
-        else
-        {
-            efficiencyBarVIA13_Scenario1Value.GetComponent<Text>().text = "no data";
-        }
-    }
-    public void DisplayEfficiencyData_Scenario2(float efficiencyVIA14)
-    {
-        if (efficiencyVIA14 != 0)
-        {
-            efficiencyBarVIA14_Scenario2Value.GetComponent<Text>().text = ((int)efficiencyVIA14).ToString() + "%";
-            efficiencyBarVIA14_Scenario2FillAmount.GetComponent<Image>().fillAmount = efficiencyVIA14 / 100;
-        }
-        else
-        {
-            efficiencyBarVIA14_Scenario2Value.GetComponent<Text>().text = "no data";
-        }
 
-    }
     public void ShowInternetConnectionErrorLabel()
     {
         labelInternetConnectionStatus.SetActive(true);
@@ -227,13 +190,12 @@ public class View : MonoBehaviour
     {
         toggleBtns.SetActive(true);
     }
-    public void HideRuntimeDataSection()
+    public void ShowDataScenario2()
     {
-        runtimeDataset_Scenario2.SetActive(false);
+        dataset_Scenario2.SetActive(true);
     }
-    public void ShowRuntimeDataSection()
+    public void HideDataScenario2()
     {
-        runtimeDataset_Scenario2.SetActive(true);
+        dataset_Scenario2.SetActive(false);
     }
-
 }

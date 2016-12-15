@@ -35,6 +35,7 @@ public class Model : MonoBehaviour
     private static string tempBrineOut;
     private static string warmLitPerMin;
     private static string brineLitPerMin;
+    private string CoP;
 
     // Vectors
     private Vector2 startPos;
@@ -198,17 +199,19 @@ public class Model : MonoBehaviour
     {
         if (Controller.sceneState == PogramFlowState.IsScenario1 || Controller.sceneState == PogramFlowState.IsScenario2)
         {
-            Controller.readyToPlay = true;
             view.HideSelectAppScenarioAnimation();
-
             //Checks if AR marker detected. If marker has been detected then shows data based on chosen scenario.
             if (DefaultTrackableEventHandler.isARMarkerDetected == true)
             {
                 view.HideTargetGuide();
                 if (Controller.sceneState == PogramFlowState.IsScenario1)
+                {
                     view.scenario1.SetActive(true);
-                else if (Controller.sceneState == PogramFlowState.IsScenario2)
+                }
+                if (Controller.sceneState == PogramFlowState.IsScenario2)
+                {
                     view.scenario2.SetActive(true);
+                }
             }
             else
             {
@@ -577,6 +580,12 @@ public class Model : MonoBehaviour
             XmlNodeList warmnodes = root.SelectNodes("/Data/WarmData");
             XmlNodeList brinenodes = root.SelectNodes("/Data/BrineData");
             XmlNodeList perminnodes = root.SelectNodes("/Data/PerMinData");
+            XmlNodeList elmåler = root.SelectNodes("/Data/ElmaalerData");
+
+            int tTempBrineIn = 0;
+            int tTempBrineOut = 0;
+            int tBrineLitPerMin = 0;
+
             foreach (XmlNode node in warmnodes)
             {
                 tempWarmIn = Convert.ToString(ConverterValue(node["WarmIn"].InnerText));
@@ -584,13 +593,30 @@ public class Model : MonoBehaviour
             }
             foreach (XmlNode node in brinenodes)
             {
+
                 tempBrineIn = Convert.ToString(ConverterValue(node["BrineIn"].InnerText));
                 tempBrineOut = Convert.ToString(ConverterValue(node["BrineOut"].InnerText));
+                tTempBrineIn = ConverterValue(node["BrineIn"].InnerText);
+                tTempBrineOut = ConverterValue(node["BrineOut"].InnerText);
             }
             foreach (XmlNode node in perminnodes)
             {
                 brineLitPerMin = Convert.ToString(ConverterValue(node["BrinePerMin"].InnerText));
+                tBrineLitPerMin = ConverterValue(node["BrinePerMin"].InnerText);
                 warmLitPerMin = Convert.ToString(ConverterValue(node["WarmPerMin"].InnerText));
+            }
+
+            foreach (XmlNode node in elmåler)
+            {
+                int elmaaler = (ConverterValue(node["Elmaaler"].InnerText));
+                if (!elmaaler.Equals(0))
+                {
+                    CoP = Convert.ToString(findOutCoP(tTempBrineIn, tTempBrineOut, tBrineLitPerMin, elmaaler));
+                }
+                else
+                {
+                    CoP = "0";
+                }
             }
             Controller.runtimeDataState = LoadRuntimeDataState.UseRuntimeData;
             Debug.Log("Web Server Connection has been Established");
@@ -601,6 +627,34 @@ public class Model : MonoBehaviour
             Debug.Log(ex.ToString());
         }
     }
+    public double findOutCoP(int temp_in, int temp_out, int brine_flow, int total_consumption)
+    {
+        double SVCBrine = 4.109e6;// J / m ^ 3 / K.
+                                  // SVCBrine = 4109e6; //J/m^3/K
+                                  // calculate power put in/extracted from ground    
+
+        /*Debug.Log("GIVEN: ");
+        Debug.Log(SVCBrine + "[J / m ^ 3 / K] : SVCBrine");
+        Debug.Log(temp_in + "[*C]: temp in");
+        Debug.Log(temp_out + "[*C] :temp out");*/
+        //Debug.Log(total_consumption + "[W] : total energy consumption of the house \n");
+
+        double nbrine_flow = Convert.ToDouble(brine_flow) / 60 * 0.001;
+        /*Debug.Log(" brine_flow = brine flow(l/min) * 0.001/60 to transform to m^3/s");
+        Debug.Log(nbrine_flow + "[m3/s]: brine flow \n");
+        Debug.Log(" water flow m3/s" + nbrine_flow);*/
+        // double power_water = nwater_flow * SVCwater * (temp_in - temp_out);
+        // Debug.Log("CALCULATIONS");
+        double powerBrine = nbrine_flow * SVCBrine * (temp_in - temp_out);
+        // Debug.Log("power brine = brine flow " + nbrine_flow + "(m^3/s) *" + SVCBrine + " j/m^3/K * (" + temp_in + " *C-" + temp_out + " *C)");
+        //Debug.Log(powerBrine + "[W] : Pbrine \n");
+        //
+        double CoP = powerBrine / total_consumption;
+        // Debug.Log("CoP = powerBrine / total Energy Consumption of the house");
+        //Debug.Log("ANSWER:");
+        //Debug.Log(CoP + "  : CoP ");
+        return CoP;
+    }
     public void SetStaticSystemData()
     {
         tempWarmIn = "27";
@@ -609,20 +663,14 @@ public class Model : MonoBehaviour
         tempBrineIn = "7";
         tempBrineOut = "12";
 
-        warmLitPerMin = "11";
-        brineLitPerMin = "15";
+        warmLitPerMin = "11 ";
+        brineLitPerMin = "15 ";
+
+        CoP = "2.5";
     }
     //-------------------------------
 
     //------Display Data-------------
-    public void SetEfficiencyBar_Scenario1(float efficiencyVIA13, float efficiencyVIA14)
-    {
-        view.DisplayEfficiencyData_Scenario1(efficiencyVIA13, efficiencyVIA14);
-    }
-    public void SetEfficiencyBar_Scenario2(float efficiencyVIA14)
-    {
-        view.DisplayEfficiencyData_Scenario2(efficiencyVIA14);
-    }
     public void BuildSoillayerDescription_Scenario2(string boreholeId)
     {
         foreach (Borehole borehole in bList.GetBoreholesList())
@@ -685,18 +733,7 @@ public class Model : MonoBehaviour
             view.tempInScenario1Varme.text = tempWarmIn + " °C";
             view.tempOutScenario1Varme.text = tempWarmOut + " °C";
             view.waterFlowSpeedScenario1Varme.text = warmLitPerMin + " l/m";
-        }
-    }
-    public void DisplayRuntimeData_ScenarioInfo()
-    {
-        if (tempBrineIn != null && tempWarmIn != null)
-        {
-            view.infopage_tempBrineIn.text = tempBrineIn + " °C";
-            view.infopage_tempBrineOut.text = tempBrineOut + " °C";
-            view.infopage_waterFlowSpeedBrine.text = brineLitPerMin + " l/m";
-            view.infopage_tempVarmeIn.text = tempWarmIn + " °C";
-            view.infopage_tempVarmeOut.text = tempWarmOut + " °C";
-            view.infopage_waterFlowSpeedVarme.text = warmLitPerMin + " l/m";
+            view.currentCoPvalueScenario1.text = CoP;
         }
     }
     public void DisplayRuntimeData_Scenario2(string boreholeId)
@@ -718,6 +755,19 @@ public class Model : MonoBehaviour
                 view.waterFlowSpeedScenario1Varme.text = "19 l/m";
                 view.boreholeName.text = "VIA 14";
             }
+        }
+    }
+    public void DisplayData_ScenarioInfo()
+    {
+        if (tempBrineIn != null && tempWarmIn != null)
+        {
+            view.infopage_tempBrineIn.text = tempBrineIn + "°C";
+            view.infopage_tempBrineOut.text = tempBrineOut + "°C";
+            view.infopage_waterFlowSpeedBrine.text = brineLitPerMin + "l/m";
+            view.infopage_tempVarmeIn.text = tempWarmIn + "°C";
+            view.infopage_tempVarmeOut.text = tempWarmOut + "°C";
+            view.infopage_waterFlowSpeedVarme.text = warmLitPerMin + "l/m";
+            view.infopageCoPvalue.text = CoP;
         }
     }
     //-------------------------------

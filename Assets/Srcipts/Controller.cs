@@ -14,9 +14,6 @@ public class Controller : MonoBehaviour
     public static LoadRuntimeDataState runtimeDataState;
     public static PogramFlowState sceneState;
 
-    // Variables
-    public static bool readyToPlay = false;
-
     // Use this for initialization
     void Start()
     {
@@ -60,7 +57,9 @@ public class Controller : MonoBehaviour
                 view.ShowLowerMenuBar();
                 view.HideBtnsScenario();
                 view.HideToggles();
-                view.HideRuntimeDataSection();
+                view.HideDataScenario2();
+                view.scenario1.SetActive(false);
+                view.scenario2.SetActive(false);
                 break;
             case PogramFlowState.IsScenario1:
                 if (Model.isMenuOn == true)
@@ -69,9 +68,8 @@ public class Controller : MonoBehaviour
                     view.scenario1.SetActive(true);
                     view.scenario2.SetActive(false);
                     model.DisplayRuntimeData_Scenario1();
+                    view.HideDataScenario2();
                     view.ShowToggles();
-                    view.HideRuntimeDataSection();
-                    model.SetEfficiencyBar_Scenario1(33, 56);
                 }
                 break;
             case PogramFlowState.IsScenario2:
@@ -80,24 +78,20 @@ public class Controller : MonoBehaviour
                     view.scenarioInfo.SetActive(false);
                     view.scenario1.SetActive(false);
                     view.scenario2.SetActive(true);
-                    view.ShowRuntimeDataSection();
+                    view.ShowDataScenario2();
                     view.HideToggles();
                     model.BuildSoillayerDescription_Scenario2("VIA14");
                     model.DisplayRuntimeData_Scenario2("VIA14");
-                    model.SetEfficiencyBar_Scenario2(56);
                 }
                 break;
             case PogramFlowState.IsScenarioInfo:
                 view.scenarioInfo.SetActive(true);
-                view.HideInternetConnectionErrorLabel();
-                view.HideTargetGuide();
-                view.HideMainMenu();
-                view.HideServerConnectionErrorLabel();
-                view.HideUsedStaticDataLabel();
-                model.DisplayRuntimeData_ScenarioInfo();
+                model.DisplayData_ScenarioInfo();
                 break;
             case PogramFlowState.DefaultMode:
                 view.scenarioInfo.SetActive(false);
+                view.scenario1.SetActive(false);
+                view.scenario2.SetActive(false);
                 view.ShowSelectAppScenarioAnimation();
                 view.ShowMainMenu();
                 view.ShowBtnsScenario();
@@ -111,7 +105,7 @@ public class Controller : MonoBehaviour
     {
         while (Model.tryEstablishConnectionToWebServer)
         {
-            if (Model.isLocationDetected)
+            if (Model.isLocationDetected&&Model.isInternetConnectionEstablished)
             {
                 switch (runtimeDataState)
                 {
@@ -121,7 +115,6 @@ public class Controller : MonoBehaviour
                         model.DataServerConnector("http://9b15d8f2.ngrok.io/dbtest.php");
                         break;
                     case LoadRuntimeDataState.UseRuntimeData:
-
                         view.HideUsedStaticDataLabel();
                         view.HideLoadDataAnimation();
                         Debug.Log("Needed Web Data has been obtained");
@@ -135,7 +128,6 @@ public class Controller : MonoBehaviour
                         view.HideLoadDataAnimation();
                         Debug.Log("Used Static Data");
                         view.HideLoadDataAnimation();
-                        Model.tryEstablishConnectionToWebServer = false;
                         break;
                     case LoadRuntimeDataState.DefaultMode:
 

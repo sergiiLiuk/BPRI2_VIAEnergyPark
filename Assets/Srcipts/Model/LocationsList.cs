@@ -8,7 +8,7 @@ public class LocationsList : MonoBehaviour
     public void InitLocationList()
     {
         InitDataList();
-        BoreholeLocation viaEnergyPark = new BoreholeLocation("VIA Energy Park, Horsens", "ARmarkerBPRI2");
+        BoreholeLocation viaEnergyPark = new BoreholeLocation("VIA Energy Park, Horsens", "ARmarkerVIAEnergyStorage");
         AddNewLocationToList(viaEnergyPark);
     }
     private void InitDataList()

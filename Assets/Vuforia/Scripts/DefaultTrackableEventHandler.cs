@@ -77,10 +77,6 @@ namespace Vuforia
 
         private void OnTrackingFound()
         {
-            //if (AppController.selectedScenario == 1 || AppController.selectedScenario == 2)
-            if (Controller.readyToPlay == true)
-            {
-
                 Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
                 Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
@@ -95,9 +91,7 @@ namespace Vuforia
                 {
                     component.enabled = true;
                 }
-
                 Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
-            }
         }
 
 
